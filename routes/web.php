@@ -30,3 +30,9 @@ Route::namespace('Store')
     ->prefix('sign-in')
     ->name('public.')
     ->group(__DIR__ . '/Store/Location/public.php');
+
+Route::middleware(['auth:sanctum', 'verified'])
+    ->namespace('Shopper')
+    ->prefix('shopper')
+    ->name('shopper.')
+    ->group(__DIR__ . '/Shopper/web.php');
