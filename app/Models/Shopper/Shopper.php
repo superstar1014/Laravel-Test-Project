@@ -21,7 +21,10 @@ class Shopper extends Model
     protected $fillable = [
         'first_name',
         'last_name',
-        'email'
+        'email',
+        'location_id',
+        'status_id',
+        'check_in'
     ];
 
     /**

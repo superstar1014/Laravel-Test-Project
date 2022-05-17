@@ -20,5 +20,8 @@ Route::name('create')
 Route::name('save')
     ->post('/create', [LocationController::class, 'store']);
 
+Route::name('shopperCreate')
+    ->post('/shopperCreate', [LocationController::class, 'shopperCreate']);
+
 Route::name('queue')
     ->get('/{locationUuid}', [LocationController::class, 'queue']);

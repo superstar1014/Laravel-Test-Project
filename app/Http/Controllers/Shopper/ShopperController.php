@@ -44,6 +44,7 @@ class ShopperController extends Controller
      */
     public function store(ShopperStoreRequest $request): \Illuminate\Http\RedirectResponse
     {
+        print_r($request->email);exit;
         $this->shopper->create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,

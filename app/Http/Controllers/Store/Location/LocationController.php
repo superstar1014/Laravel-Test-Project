@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Store\Location\LocationCreateRequest;
 use App\Http\Requests\Store\Location\LocationQueueRequest;
 use App\Http\Requests\Store\Location\LocationStoreRequest;
+use App\Http\Requests\Shopper\ShopperStoreRequest;
 use App\Models\Store\Location\Location;
+use App\Models\Store\Shopper\Shopper;
 use App\Services\Store\Location\LocationService;
+use App\Services\Shopper\ShopperService;
+use Carbon\Carbon;
 
 /**
  * Class LocationController
@@ -21,12 +25,19 @@ class LocationController extends Controller
     protected $location;
 
     /**
+     * @var ShopperService
+     */
+    protected $shopper;
+
+    /**
      * LocationController constructor.
      * @param LocationService $location
+     * @param ShopperService $shopper
      */
-    public function __construct(LocationService $location)
+    public function __construct(LocationService $location, ShopperService $shopper)
     {
         $this->location = $location;
+        $this->shopper = $shopper;
     }
 
     /**
@@ -67,6 +78,42 @@ class LocationController extends Controller
     }
 
     /**
+     * @param ShopperStoreRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function shopperCreate(ShopperStoreRequest $request, string $storeUuid): \Illuminate\Http\RedirectResponse
+    {
+        $locationUuid = $request->locationUuid;
+
+        $location = $this->location->show(
+            [
+                'uuid' => $locationUuid
+            ],
+            [
+                'Shoppers',
+                'Shoppers.Status'
+            ]
+        );
+
+        $params = [
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'location_id' => $request->location_id,
+        ];
+        $this->shopper->create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'location_id' => $request->location_id,
+            'status_id' => 3,
+            'check_in' => Carbon::now()
+        ]);
+
+        return redirect()->route('store.store', ['store' => $storeUuid]);
+    }
+
+    /**
      * @param LocationQueueRequest $request
      * @param string $storeUuid
      * @param string $locationUuid
@@ -92,6 +139,7 @@ class LocationController extends Controller
 
         return view('stores.location.queue')
             ->with('location', $location)
+            ->with('store', $storeUuid)
             ->with('shoppers', $shoppers);
     }
 }
