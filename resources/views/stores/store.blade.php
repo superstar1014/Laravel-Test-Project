@@ -50,7 +50,12 @@
                                         </x-table-column>
 
                                         <x-table-column>
-                                            {{ $location['shopper_limit'] ?? null }}
+                                            @csrf
+                                            <input type="hidden" name="location_id" value="{{ $location['id'] }}">
+                                            <button class="dec-btn inline-flex items-center px-4 py-3 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition">-</button>
+                                            <input name="number" type="text" readonly value="{{ $location['shopper_limit'] ?? null }}">
+                                            <button class="inc-btn inline-flex items-center px-4 py-3 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition">+</button>
+                                            <!-- {{ $location['shopper_limit'] ?? null }} -->
                                         </x-table-column>
 
                                         <x-table-column>
@@ -80,3 +85,85 @@
     </div>
 
 </x-app-layout>
+
+<script type="text/javascript">
+    function inc() {
+        let current_limit = $(this).val();
+        console.log(current_limit);
+        // let uuid = number.closest('td').find('[name=\"locationUuid\"]');
+        // let current_limit = number.val();
+        // number.val(parseInt(current_limit) + 1);
+        // console.log(uuid.val())
+        // $.ajax({
+        //     url: url,
+        //     type: 'POST',
+        //     data: {
+        //         number: number.value
+        //     },
+        //     success: data => {
+        //         console.log(data);
+        //     },
+        //     error: data => {
+        //         console.log(data);
+        //     }
+        // });
+    }
+
+    function dec() {
+        let number = document.querySelector('[name="number"]');
+        if (parseInt(number.value) > 0) {
+            number.value = parseInt(number.value) - 1;
+        }
+    }
+
+    $(document).ready(function() {
+        $('.inc-btn').click(function() {
+            var number = $(this).closest('td').find('[name=\"number\"]');
+            var location_id = $(this).closest('td').find('[name=\"location_id\"]');
+
+            var current_limit = number.val();
+            number.val(parseInt(current_limit) + 1);
+
+            $.ajax({
+                url: "{{ route('store.location.updateLimit', ['storeUuid' => $store->uuid]) }}",
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "limit": number.val(),
+                    "location_id": location_id.val()
+                },
+                success: data => {
+                    console.log(data);
+                },
+                error: data => {
+                    console.log(data);
+                }
+            });
+        });
+
+        $('.dec-btn').click(function() {
+            var number = $(this).closest('td').find('[name=\"number\"]');
+            var location_id = $(this).closest('td').find('[name=\"location_id\"]');
+            var current_limit = number.val();
+            if (parseInt(current_limit) > 0) {
+                number.val(parseInt(current_limit) - 1);
+            }
+
+            $.ajax({
+                url: "{{ route('store.location.updateLimit', ['storeUuid' => $store->uuid]) }}",
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "limit": number.val(),
+                    "location_id": location_id.val()
+                },
+                success: data => {
+                    console.log(data);
+                },
+                error: data => {
+                    console.log(data);
+                }
+            });
+        });
+    });
+</script>

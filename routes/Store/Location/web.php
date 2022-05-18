@@ -28,3 +28,6 @@ Route::name('shopperSave')
 
 Route::name('checkout')
     ->post('/checkout', [LocationController::class, 'checkout']);
+
+Route::name('updateLimit')
+    ->post('/updateLimit', [LocationController::class, 'updateLimit']);

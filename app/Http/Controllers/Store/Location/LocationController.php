@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Store\Location;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Requests\Store\Location\LocationCreateRequest;
 use App\Http\Requests\Store\Location\LocationQueueRequest;
 use App\Http\Requests\Store\Location\LocationStoreRequest;
@@ -227,8 +228,20 @@ class LocationController extends Controller
 
             $this->shopper->update($next_shopper['id'], ['status_id' => $active_status['id']]);
         } 
-        
+
         return redirect()->route('store.location.queue', ['storeUuid' => $storeUuid, 'locationUuid' => $request->locationUuid]);
         
+    }
+
+    /**
+     * @param Request $request
+     * @param string $storeUuid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateLimit(Request $request, string $storeUuid): \Illuminate\Http\JsonResponse
+    {
+        $this->location->update((int)$request->location_id, ['shopper_limit' => $request->limit]);
+        return response()->json(['status' => 'success']);
+
     }
 }
